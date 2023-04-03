@@ -14,14 +14,13 @@ include("includes/nav.php");
         <!-- Blog Entries Column -->
         <div class="col-md-8">
 
-            <h1 class="page-header">
-                Page Heading
-                <small>Secondary Text</small>
-            </h1>
-
             <?php
 
-            $query = "SELECT * FROM posts";
+            if(isset($_GET['category'])){
+                $c_id=$_GET['category'];
+            }
+
+            $query = "SELECT * FROM posts WHERE post_category_id=$c_id";
             $execute = mysqli_query($connection, $query);
 
             while ($data = mysqli_fetch_assoc($execute)) {
@@ -29,7 +28,6 @@ include("includes/nav.php");
                 $postTitle =$data['post_title'];
                 $postAuthor=$data['post_author'];
                 $date=$data['post_date'];
-                $content=substr($data['post_content'],0,50);
 
                 ?>
 
@@ -42,12 +40,10 @@ include("includes/nav.php");
                 </p>
                 <p><span class="glyphicon glyphicon-time"></span> Posted on <?php echo $date;?></p>
                 <hr>
-                <a href="post.php?p_id=<?php echo $id ?>">
-                <img class="img-responsive" src="images/<?php echo $data['post_image']; ?>" alt=""></a>
+                <img class="img-responsive" src="images/<?php echo $data['post_image']; ?>" alt="">
                 <hr>
-                <p><?php echo $content; ?></p>
-
-                <a class="btn btn-primary" href="post.php?p_id=<?php echo $id ?>">Read More <span class="glyphicon glyphicon-chevron-right"></span></a>
+                <p><?php echo $data['post_content']; ?></p>
+                <a class="btn btn-primary" href="#">Read More <span class="glyphicon glyphicon-chevron-right"></span></a>
 
                 <hr>
 
