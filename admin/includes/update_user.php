@@ -32,7 +32,7 @@ if(isset($_GET['u_id'])){
 if(isset($_POST['update_user'])){
 
     $username=$_POST['username'];
-    $password=$_POST['password'];
+    $password=password_hash($_POST['password'],PASSWORD_DEFAULT);
    
     $user_image=$_FILES['user_image']['name'];
     $user_image_temp=$_FILES['user_image']['tmp_name'];

@@ -14,6 +14,8 @@
     <!-- Top Menu Items -->
     <ul class="nav navbar-right top-nav">
         <li><a href="../index.php">Home</a></li>
+        <li><a href="../index.php" >Users Online: <span style="color:green"><?php echo onlineUsers();?></span></a></li>
+        <!-- <li><a href="#" >Users Online: <span style="color:green" class="online"></span></a></li> -->
 
         <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> <?php echo $_SESSION['username']; ?> <b class="caret"></b></a>
@@ -29,5 +31,22 @@
         </li>
     </ul>
     <?php include("includes/sidebar.php") ?>
+    
             <!-- /.navbar-collapse -->
         </nav>
+        <script>
+function loadUserOnline(){
+    $.get("functions.php?onlineusers=result",function(data){
+
+        $(".online").text(data);
+
+    });
+}
+setInterval(function (){
+    loadUserOnline();
+},500);
+
+
+
+
+        </script>

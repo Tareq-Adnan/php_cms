@@ -1,8 +1,7 @@
 <?php include("includes/header.php");
 
+
 ?>
-
-
 <div id="wrapper">
     <?php include("includes/nav.php");
 
@@ -23,13 +22,8 @@
                             <?php echo $_SESSION['username']; ?>
                         </small>
                     </h1>
+                  
                 </div>
-
-
-
-
-
-
 
                 <!-- /.row -->
 
@@ -203,6 +197,7 @@
 
 
                 <script src="js/jquery.js"></script>
+                <script src="js/scripts.js"></script>
                 <script src="js/bootstrap.min.js"></script>
 
                 </body>

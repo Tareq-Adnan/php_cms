@@ -196,6 +196,21 @@ function makeAdmin()
     }
 }
 
+function reset_count()
+{
+    global $connection;
+    if (isset($_GET['resetCount'])) {
+        $id = $_GET['resetCount'];
+
+        $query = "UPDATE posts SET post_views=0 WHERE post_id = $id";
+        $run = mysqli_query($connection, $query);
+        header("Location: posts.php");
+        if ($run) {
+            die("info Changed!");
+        }
+    }
+}
+
 function makeSub()
 {
     global $connection;
@@ -212,4 +227,73 @@ function makeSub()
 }
 
 
+function pagination(){
+    if(isset($_GET['page'])){
+        $page=$_GET['page'];
+    }else{
+        $page="";
+    }
+
+    if($page=="" ||$page==1){
+        $page_1=0;
+    }else{
+        $page_1=($page*2)-2;
+    }
+}
+
+
+function onlineUsers(){
+    global $connection;
+$session=session_id();
+$time=time();
+$imeOut=10;
+$time_out=$time-$imeOut;
+
+$query="SELECT * FROM users_online WHERE session='$session'";
+$eq=mysqli_query($connection,$query);
+$count= mysqli_num_rows($eq);
+
+if($count==NULL){
+    mysqli_query($connection,"INSERT INTO users_online(session,time) VALUES('$session','$time')");
+
+}else{
+    mysqli_query($connection,"UPDATE users_online SET time='$time' WHERE session='$session'");
+
+}
+$usersOnline=mysqli_query($connection,"SELECT * FROM users_online WHERE time > $time_out");
+return $countUser=mysqli_num_rows($usersOnline);
+}
+
+// function onlineUsers(){
+
+//     if(isset($_GET['onlineusers'])){
+    
+//     global $connection;
+//     if(!$connection){
+//         session_start();
+//         include("../includes/db.php");
+
+//         $session=session_id();
+//         $time=time();
+//         $imeOut=10;
+//         $time_out=$time-$imeOut;
+        
+//         $query="SELECT * FROM users_online WHERE session='$session'";
+//         $eq=mysqli_query($connection,$query);
+//         $count= mysqli_num_rows($eq);
+        
+//         if($count==NULL){
+//             mysqli_query($connection,"INSERT INTO users_online(session,time) VALUES('$session','$time')");
+        
+//         }else{
+//             mysqli_query($connection,"UPDATE users_online SET time='$time' WHERE session='$session'");
+        
+//         }
+//         $usersOnline=mysqli_query($connection,"SELECT * FROM users_online WHERE time > $time_out");
+//         echo $countUser=mysqli_num_rows($usersOnline);
+
+//     }
+// }
+// }
+// onlineUsers();
 ?>

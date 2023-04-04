@@ -19,54 +19,54 @@ include("admin/includes/functions.php");
             if (isset($_GET['p_id'])) {
                 $id = $_GET['p_id'];
 
-            } ?>
-            <h1 class="page-header">
-                Page Heading
-                <small>Secondary Text</small>
-            </h1>
+                $qu = "UPDATE posts SET post_views=post_views+1 WHERE post_id=$id";
+                $e = mysqli_query($connection, $qu);
 
-            <?php
+                $query = "SELECT * FROM posts WHERE post_id=$id";
+                $execute = mysqli_query($connection, $query);
 
-            $query = "SELECT * FROM posts WHERE post_id=$id";
-            $execute = mysqli_query($connection, $query);
+                while ($data = mysqli_fetch_assoc($execute)) {
 
-            while ($data = mysqli_fetch_assoc($execute)) {
+                    $postTitle = $data['post_title'];
+                    $postAuthor = $data['post_author'];
+                    $date = $data['post_date'];
+                    $content = $data['post_content'];
+                    $post_Image = $data['post_image'];
 
-                $postTitle = $data['post_title'];
-                $postAuthor = $data['post_author'];
-                $date = $data['post_date'];
-                $content = $data['post_content'];
-                $post_Image = $data['post_image'];
+                    ?>
 
-                ?>
+                    <!-- First Blog Post -->
+                    <h2>
+                        <a href="#">
+                            <?php echo $postTitle; ?>
+                        </a>
+                    </h2>
+                    <p class="lead">
+                        by <a href="index.php">
+                            <?php echo $postAuthor; ?>
+                        </a>
+                    </p>
+                    <p><span class="glyphicon glyphicon-time"></span> Posted on
+                        <?php echo $date; ?>
+                    </p>
+                    <hr>
+                    <img class="img-responsive" src="images/<?php echo $data['post_image']; ?>" alt="">
+                    <hr>
+                    <p>
+                        <?php echo $data['post_content']; ?>
+                    </p>
 
-                <!-- First Blog Post -->
-                <h2>
-                    <a href="#">
-                        <?php echo $postTitle; ?>
-                    </a>
-                </h2>
-                <p class="lead">
-                    by <a href="index.php">
-                        <?php echo $postAuthor; ?>
-                    </a>
-                </p>
-                <p><span class="glyphicon glyphicon-time"></span> Posted on
-                    <?php echo $date; ?>
-                </p>
-                <hr>
-                <img class="img-responsive" src="images/<?php echo $data['post_image']; ?>" alt="">
-                <hr>
-                <p>
-                    <?php echo $data['post_content']; ?>
-                </p>
-
-                <hr>
+                    <hr>
 
 
 
 
-            <?php } ?>
+                <?php }
+            } else {
+                header("Location: index.php");
+            }
+
+            ?>
 
             <!-- Blog Comments -->
 
@@ -78,10 +78,11 @@ include("admin/includes/functions.php");
                 $comment_email = $_POST['comment_email'];
                 $commnet_content = $_POST['comment_content'];
 
-                if (empty($comment_author) || empty($comment_email) || empty($comment_content)) {
+                if (empty($comment_author) && empty($comment_email) && empty($comment_content)) {
                     echo "<p style='color:red;'>Field Can't be empty</p>";
-                    
+
                 } else {
+                    
                     $query = "INSERT INTO comments (comment_post_id,comment_author,comment_email,comment_content,comment_status,comment_date) VALUES($id,'$comment_author','$comment_email','$commnet_content','pending',now())";
                     $up = mysqli_query($connection, $query);
 

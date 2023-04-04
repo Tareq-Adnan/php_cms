@@ -39,7 +39,7 @@
                     <?php echo $data['username']; ?>
                 </td>
                 <td>
-                    <?php echo $data['password']; ?>
+                    <?php echo substr($data['password'],0,20); ?>
                 </td>
                 <td>
                     <?php echo $data['first_name']; ?>
