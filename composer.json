@@ -1,0 +1,18 @@
+{
+    "name": "bs1065/cms_project",
+    "require": {
+        "phpmailer/phpmailer": "^6.8",
+        "pusher/pusher-php-server": "^7.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bs1065\\CmsProject\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Tareq Adnan",
+            "email": "adnantareq2@gmail.com"
+        }
+    ]
+}

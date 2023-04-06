@@ -7,6 +7,6 @@ $_SESSION['userType']=null;
 $_SESSION['first_name']=null;
 $_SESSION['last_name']=null;
 
-header("Location: ../index.php");
+header("Location: ../index");
 
 ?>

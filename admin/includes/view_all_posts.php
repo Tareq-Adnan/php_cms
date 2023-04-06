@@ -1,4 +1,5 @@
 <?php 
+session_start();
 
 if(isset($_POST["checkBox"])){
 
@@ -10,12 +11,6 @@ if(isset($_POST["checkBox"])){
 }
 
 ?>
-
-
-
-
-
-
 
 
 <form action="" method="post">
@@ -77,7 +72,16 @@ if(isset($_POST["checkBox"])){
                             <td><?php echo $data['post_views']; ?></td>
                             <td><a href="../post.php?p_id=<?php echo $data['post_id']; ?>">View Post</a></td>
                             <td><a onClick="javascript:return confirm('Are you sure want to reset?');" href="posts.php?resetCount=<?php echo $data['post_id']; ?>" >Reset</a></td>
-                            <td><a onClick="javascript:return confirm('Are you sure want to delete?');" href="posts.php?delete=<?php echo $data['post_id']; ?>" >DELETE</a></td>
+
+                          <form method="post">
+                            <input type="hidden" name="post_id" value="<?php echo $data['post_id']?>">
+                            
+                          <td onClick="javascript:return confirm('Are you sure want to delete?');"> <input type="submit" class="btn btn-warning" name="delete" value="DELETE"></td>
+                          </form>
+
+                           
+
+
                             <td><a onClick="javascript:return confirm('Are you sure want to Edit?');"  href="posts.php?source=edit_post&p_id=<?php echo $data['post_id']; ?>" >EDIT</a></td>
                             </tr>
                             <?php }

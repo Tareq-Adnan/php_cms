@@ -7,35 +7,24 @@ include("admin/includes/functions.php") ?>
 
 <?php include "includes/nav.php";
 
+require './vendor/autoload.php';
+new Pusher\Pusher('key','secret','app-key','option');
+
+
 
 if (isset($_POST['register'])) {
 
-    $username = mysqli_real_escape_string($connection, $_POST['username']);
-    $email = mysqli_real_escape_string($connection, $_POST['email']);
-    $pass = mysqli_real_escape_string($connection, $_POST['password']);
+    $username =trim( mysqli_real_escape_string($connection, $_POST['username']));
+    $email = trim(mysqli_real_escape_string($connection, $_POST['email']));
+    $pass =trim( mysqli_real_escape_string($connection, $_POST['password']));
+    
+    $message = register($username,$email,$pass);
 
-    if (!empty($username) && !empty($pass) && !empty($email)) {
-
-
-        $pass = password_hash($pass, PASSWORD_DEFAULT);
-
-        $query = "INSERT INTO users (username,user_email,password,userType,date) VALUES ('$username','$email','$pass','subscriber',now())";
-        $exec = mysqli_query($connection, $query);
-
-        confirmation($exec);
-
-        $message = "<p style='color:green;'>Regsitration Successful!</p>";
-    } else {
-        $message = "<p style='color: red;'>Field can't be empty!</p>";
+}    else {
+        $message = "";
+    
     }
     
-} else {
-    $message = "";
-}
-
-
-
-
 
 
 ?>

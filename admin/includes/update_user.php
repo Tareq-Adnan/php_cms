@@ -32,7 +32,15 @@ if(isset($_GET['u_id'])){
 if(isset($_POST['update_user'])){
 
     $username=$_POST['username'];
-    $password=password_hash($_POST['password'],PASSWORD_DEFAULT);
+    $tempPass=$_POST['password'];
+
+    if(empty($tempPass)){
+        $password=$epassword;
+
+    }else{
+        $password=password_hash($_POST['password'],PASSWORD_DEFAULT);
+    }
+   
    
     $user_image=$_FILES['user_image']['name'];
     $user_image_temp=$_FILES['user_image']['tmp_name'];
@@ -84,7 +92,7 @@ if(isset($_POST['update_user'])){
 
 <div class="form-group">
     <label for="password">Password</label>
-    <input value="<?php echo $epassword ?>" type="text" class="form-control" name="password">
+    <input value="" type="text" class="form-control" name="password" placeholder="Enter New Password">
 </div>
 
 <div class="form-group">
@@ -112,8 +120,8 @@ if(isset($_POST['update_user'])){
     <label for="userType">User Type</label><br>
     <select style="padding: 10px" name="userType" id="">
 
-        <option value="admin">Admin</option>
-        <option value="subscriber">Subscriber</option>
+        <option value="admin">admin</option>
+        <option value="subscriber">subscriber</option>
         
 
     </select>

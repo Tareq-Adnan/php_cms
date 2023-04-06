@@ -1,5 +1,15 @@
 <?php
 
+
+
+function escape($string)
+{
+    global $connection;
+    mysqli_real_escape_string($connection, trim(strip_tags($string)));
+
+}
+
+
 function confirmation($up)
 {
     global $connection;
@@ -108,8 +118,8 @@ function delete_category()
 function delete_post()
 {
     global $connection;
-    if (isset($_GET['delete'])) {
-        $id = $_GET['delete'];
+    if (isset($_POST['delete'])) {
+        $id = $_POST['post_id'];
 
         $query = "DELETE FROM posts WHERE post_id = $id";
         $run = mysqli_query($connection, $query);
@@ -168,17 +178,24 @@ function approve_comment()
 
 function delete_user()
 {
-    global $connection;
-    if (isset($_GET['delete'])) {
-        $id = $_GET['delete'];
+    if (isset($_SESSION['userType'])) {
+        if ($_SESSION['userType'] == 'admin') {
 
-        $query = "DELETE FROM users WHERE user_id = $id";
-        $run = mysqli_query($connection, $query);
-        header("Location: users.php");
-        if ($run) {
-            die("User Deleted!");
+            global $connection;
+            if (isset($_GET['delete'])) {
+                $id = $_GET['delete'];
+
+                $query = "DELETE FROM users WHERE user_id = $id";
+                $run = mysqli_query($connection, $query);
+                header("Location: users.php");
+                if ($run) {
+                    die("User Deleted!");
+                }
+            }
         }
+
     }
+
 }
 
 function makeAdmin()
@@ -227,47 +244,49 @@ function makeSub()
 }
 
 
-function pagination(){
-    if(isset($_GET['page'])){
-        $page=$_GET['page'];
-    }else{
-        $page="";
+function pagination()
+{
+    if (isset($_GET['page'])) {
+        $page = $_GET['page'];
+    } else {
+        $page = "";
     }
 
-    if($page=="" ||$page==1){
-        $page_1=0;
-    }else{
-        $page_1=($page*2)-2;
+    if ($page == "" || $page == 1) {
+        $page_1 = 0;
+    } else {
+        $page_1 = ($page * 2) - 2;
     }
 }
 
 
-function onlineUsers(){
+function onlineUsers()
+{
     global $connection;
-$session=session_id();
-$time=time();
-$imeOut=10;
-$time_out=$time-$imeOut;
+    $session = session_id();
+    $time = time();
+    $imeOut = 10;
+    $time_out = $time - $imeOut;
 
-$query="SELECT * FROM users_online WHERE session='$session'";
-$eq=mysqli_query($connection,$query);
-$count= mysqli_num_rows($eq);
+    $query = "SELECT * FROM users_online WHERE session='$session'";
+    $eq = mysqli_query($connection, $query);
+    $count = mysqli_num_rows($eq);
 
-if($count==NULL){
-    mysqli_query($connection,"INSERT INTO users_online(session,time) VALUES('$session','$time')");
+    if ($count == NULL) {
+        mysqli_query($connection, "INSERT INTO users_online(session,time) VALUES('$session','$time')");
 
-}else{
-    mysqli_query($connection,"UPDATE users_online SET time='$time' WHERE session='$session'");
+    } else {
+        mysqli_query($connection, "UPDATE users_online SET time='$time' WHERE session='$session'");
 
-}
-$usersOnline=mysqli_query($connection,"SELECT * FROM users_online WHERE time > $time_out");
-return $countUser=mysqli_num_rows($usersOnline);
+    }
+    $usersOnline = mysqli_query($connection, "SELECT * FROM users_online WHERE time > $time_out");
+    return $countUser = mysqli_num_rows($usersOnline);
 }
 
 // function onlineUsers(){
 
 //     if(isset($_GET['onlineusers'])){
-    
+
 //     global $connection;
 //     if(!$connection){
 //         session_start();
@@ -277,17 +296,17 @@ return $countUser=mysqli_num_rows($usersOnline);
 //         $time=time();
 //         $imeOut=10;
 //         $time_out=$time-$imeOut;
-        
+
 //         $query="SELECT * FROM users_online WHERE session='$session'";
 //         $eq=mysqli_query($connection,$query);
 //         $count= mysqli_num_rows($eq);
-        
+
 //         if($count==NULL){
 //             mysqli_query($connection,"INSERT INTO users_online(session,time) VALUES('$session','$time')");
-        
+
 //         }else{
 //             mysqli_query($connection,"UPDATE users_online SET time='$time' WHERE session='$session'");
-        
+
 //         }
 //         $usersOnline=mysqli_query($connection,"SELECT * FROM users_online WHERE time > $time_out");
 //         echo $countUser=mysqli_num_rows($usersOnline);
@@ -296,4 +315,197 @@ return $countUser=mysqli_num_rows($usersOnline);
 // }
 // }
 // onlineUsers();
+
+
+
+
+function is_admin($username)
+{
+    global $connection;
+
+    $query = "SELECT userType FROM users WHERE username='$username'";
+    $run = mysqli_query($connection, $query);
+    confirmation($run);
+
+    $data = mysqli_fetch_array($run);
+
+    if ($data['userType'] !== 'admin') {
+        return true;
+    } else {
+        return false;
+    }
+
+}
+
+
+function checkUsername($username)
+{
+
+    global $connection;
+
+    $query = "SELECT username FROM users WHERE username='$username'";
+    $run = mysqli_query($connection, $query);
+    confirmation($run);
+    if (mysqli_num_rows($run) > 0) {
+        return true;
+    } else {
+        return false;
+    }
+
+}
+function checkEmail($email)
+{
+
+    global $connection;
+
+    $query = "SELECT user_email FROM users WHERE user_email='$email'";
+    $run = mysqli_query($connection, $query);
+    confirmation($run);
+    if (mysqli_num_rows($run) > 0) {
+        return true;
+    } else {
+        return false;
+    }
+
+}
+
+function register($username, $email, $pass)
+{
+    global $connection;
+
+
+    if (checkUsername($username)) {
+        return $message = 'username already exits!';
+
+    } else if (checkEmail($email)) {
+        return $message = 'already registered with this email!' . " " . "<a href='index.php'>login here</a>";
+        ;
+
+    } else if (strlen($username) < 4 || strlen($pass) < 4) {
+        return $message = "the input should be greater than 4 character!";
+
+    } else {
+        if (!empty($username) && !empty($pass) && !empty($email)) {
+            $pass = password_hash($pass, PASSWORD_DEFAULT);
+
+            $query = "INSERT INTO users (username,user_email,password,userType,date) VALUES ('$username','$email','$pass','subscriber',now())";
+            $exec = mysqli_query($connection, $query);
+
+            confirmation($exec);
+
+            return $message = "<p style='color:green;'>Regsitration Successful!</p>";
+        } else {
+            return $message = "<p style='color: red;'>Field can't be empty!</p>";
+        }
+    }
+
+
+}
+
+
+function userlogin($username, $pass)
+{
+
+    global $connection;
+
+
+
+    $username = mysqli_real_escape_string($connection, $username);
+    $password = mysqli_real_escape_string($connection, $pass);
+
+    $query = "SELECT * FROM users WHERE username='{$username}'";
+    $run = mysqli_query($connection, $query);
+    confirmation($run);
+
+
+    while ($data = mysqli_fetch_array($run)) {
+
+        $id = $data['user_id'];
+        $uname = $data['username'];
+        $pass = $data['password'];
+        $uType = ['userType'];
+        $firstName = ['first_name'];
+        $lastName = ['last_name'];
+
+    }
+    //  $pass = password_verify($password,$pass);
+
+    if ($username === $uname && password_verify($password, $pass)) {
+        $_SESSION['user_id'] = $id;
+        $_SESSION['username'] = $uname;
+        $_SESSION['password'] = $pass;
+        $_SESSION['userType'] = $uType;
+        $_SESSION['first_name'] = $firstName;
+        $_SESSION['last_name'] = $lastName;
+
+        header("Location: ../admin");
+    } else {
+        header("Location: ../index.php");
+    }
+
+}
+
+function if_method($method=NULL){
+    if($_SERVER['REQUEST_METHOD'] == strtoupper($method)){
+        return true;
+    }else{return false;}
+}
+
+function isLoggedIn(){
+    if(isset($_SESSION['userType'])){
+        return true;
+    }
+    return false;
+}
+
+
+
+
+function check(){
+global $connection;
+
+if(isset($_GET['email']) && isset($_GET['token'])){
+    $ctoken=$_GET['token'];
+    $cemail=$_GET['email'];
+}
+
+$query = "SELECT username, user_email,token FROM users WHERE token='$ctoken'";
+$exec = mysqli_query($connection, $query);
+confirmation($exec);
+while ($data = mysqli_fetch_assoc($exec)) {
+    $username = $data['username'];
+    $email = $data['user_email'];
+    $token = $data['token'];
+}
+if($cemail !==$email || $ctoken !== $token){
+    header("Location: reset.php");
+}
+else{
+    echo "done";
+}
+}
+
+
+function  save(){
+    global $connection;
+    if (isset($_POST['reset'])) {
+
+        $password = trim(mysqli_real_escape_string($connection, $_POST['password']));
+        $cpassword = trim(mysqli_real_escape_string($connection, $_POST['cpassword']));
+    
+        if ($password === $cpassword) {
+            echo "Same";
+    
+        } else {
+            return "Password Not match!";
+        }
+    
+    } else {
+    
+        return "";
+    }
+}
+
+
+
 ?>
